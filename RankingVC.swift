@@ -1,11 +1,12 @@
 //
 //  RankingVC.swift
-//  YakalamaOyunu
+//  Pika Game Project
 //
 //  Created by Ali Ayçiçek on 19.07.2023.
 //
 
 import UIKit
+//import CoreData
 
 class RankingVC: UIViewController {
     
@@ -15,10 +16,6 @@ class RankingVC: UIViewController {
     @IBOutlet weak var rankingLable: UILabel!
     
     @IBOutlet weak var rankingTableView: UITableView!
-    
-    
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()

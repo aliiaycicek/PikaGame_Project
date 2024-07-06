@@ -1,6 +1,6 @@
 //
 //  SceneDelegate.swift
-//  YakalamaOyunu
+//  Pika Game Project
 //
 //  Created by Ali Ayçiçek on 14.07.2023.
 //

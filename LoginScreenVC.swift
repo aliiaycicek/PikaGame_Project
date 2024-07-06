@@ -1,6 +1,6 @@
 //
 //  LoginScreenVC.swift
-//  YakalamaOyunu
+//  Pika Game Project
 //
 //  Created by Ali Ayçiçek on 19.07.2023.
 //
@@ -14,7 +14,6 @@ class LoginScreenVC: UIViewController {
     
     @IBOutlet weak var usernameTextField: UITextField!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -25,7 +24,6 @@ class LoginScreenVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         print ("viewWillAppear function called")
         usernameTextField.text = " "
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -39,6 +37,9 @@ class LoginScreenVC: UIViewController {
         performSegue(withIdentifier: "rankingVC" , sender: nil)
         
         
+    }
+    @IBAction func settingsButton(_ sender: Any) {
+        performSegue(withIdentifier: "settingsVC" , sender: nil)
     }
     
     
