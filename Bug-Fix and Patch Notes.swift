@@ -14,9 +14,11 @@
 
 // Giriş Ekranı yapılacak ve Animasyon eklenicek! [TAMAMLANDI] ++
 
-// Pikachu ImageViewları transparan olup backgroundları gözükmiyecek bu sayede oyuncunun yakalaması daha da zorlaşacak! [TAMAMLANDI]
+// Pikachu ImageViewları transparan olup backgroundları gözükmiyecek bu sayede oyuncunun yakalaması daha da zorlaşacak! [TAMAMLANDI] ++
 
-// Back komutu rengi değişicek ve bazı görsel iyileştirmeler yapılacak! [TAMAMLANDI]
+// Back komutu rengi değişicek ve bazı görsel iyileştirmeler yapılacak! [TAMAMLANDI] ++
+
+// Pikachulara maxHide func eklenerek maximum tıklama sayısı 2 olacak şekilde bir değişiklik yapıldı [TAMAMLANDI] ++
 
 // Ranking Sistemi eklenicek ve kullanıcı kendi yaptığı highscore ları görebilicek!  <----- Güncel Patch!
 
