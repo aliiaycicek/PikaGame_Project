@@ -22,7 +22,7 @@
 
 // Ranking Sistemi eklenicek ve kullanıcı kendi yaptığı highscore ları görebilicek!  <----- Güncel Patch!
 
-// Seçmeli Time eklenicek kullancı oyuna başlarken 3 farklı zaman seçeneği sunulucak bunlarla birlikte her farklı zaman seçeneği için 2 farklı zorluk seviyesi olucak pikachuların ve darkSide pikachuların çıkış hızı ve sayısı değişicek!
+// Seçmeli Time eklenicek kullancı oyuna başlarken 3 farklı zaman seçeneği sunulucak bunlarla birlikte her farklı zaman seçeneği için 2 farklı zorluk seviyesi olucak pikachuların ve darkSide pikachuların çıkış hızı ve sayısı değişicek! [TAMAMLANDI] ++
 
 // SkinVC adında bir view controller eklenip buraya kullanıcının pikachularını seçebilmesi için farklı pikachu skinleri eklenicek!
 
@@ -30,4 +30,4 @@
 
 // Zaman bittiğinde kullanıcnın ek 5 saniye zaman alabilmesi için 1 sefere mahsus para/reklam izle komutları eklenerek gelir kısmın ayarlanıcak!
 
-// Ses dosyaları eklenicek!
+// Ses dosyaları eklenicek! [TAMAMLANDI] +

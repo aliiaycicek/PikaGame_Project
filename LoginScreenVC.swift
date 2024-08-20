@@ -6,72 +6,82 @@
 //
 
 import UIKit
+import AVFoundation
 
 class LoginScreenVC: UIViewController {
+
+    var audioPlayer: AVAudioPlayer?
+    var userName = ""
+    var selectedDifficulty = "Easy"
     
-    var userName = " "
     @IBOutlet weak var gameNameLabel: UILabel!
-    
     @IBOutlet weak var usernameTextField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        print ("viewDidDisappear function called")
-        
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        print ("viewWillAppear function called")
-        usernameTextField.text = " "
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        print ("viewWillDisappear function called")
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        print ("viewDidAppear function called")
+        self.navigationItem.hidesBackButton = true
     }
     
     @IBAction func leaderBoardButton(_ sender: Any) {
-        performSegue(withIdentifier: "rankingVC" , sender: nil)
-        
-        
-    }
-    @IBAction func settingsButton(_ sender: Any) {
-        performSegue(withIdentifier: "settingsVC" , sender: nil)
+        playSound()
+        performSegue(withIdentifier: "rankingVC", sender: nil)
     }
     
+    @IBAction func settingsButton(_ sender: Any) {
+        playSound()
+        performSegue(withIdentifier: "settingsVC", sender: nil)
+    }
     
     @IBAction func playButton(_ sender: Any) {
-        userName = usernameTextField.text!
-        if usernameTextField.text == " " {
-            alertFunction(titleInput: "Error!", massageInput: "Username not found!")
+        playSound()
+        userName = usernameTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        
+        if userName.isEmpty {
+            alertFunction(titleInput: "Error!", messageInput: "Username not found!")
+        } else {
+            // Zorluk seçimi için alert
+            let alert = UIAlertController(title: "Select Difficulty", message: "Please select the difficulty level.", preferredStyle: .alert)
+            
+            let easyAction = UIAlertAction(title: "Easy", style: .default) { _ in
+                self.selectedDifficulty = "Easy"
+                self.performSegue(withIdentifier: "nextScreenVC", sender: nil)
+            }
+            
+            let hardAction = UIAlertAction(title: "Hard", style: .default) { _ in
+                self.selectedDifficulty = "Hard"
+                self.performSegue(withIdentifier: "nextScreenVC", sender: nil)
+            }
+            
+            alert.addAction(easyAction)
+            alert.addAction(hardAction)
+            
+            self.present(alert, animated: true, completion: nil)
         }
-        else {
-            performSegue(withIdentifier: "nextScreenVC", sender: nil)  }
     }
     
-    
-    func alertFunction (titleInput: String, massageInput: String) {
-        
-        let alert = UIAlertController(title: titleInput , message: massageInput , preferredStyle: UIAlertController.Style.alert)
-        let okButton = UIAlertAction(title: "Okey", style: UIAlertAction.Style.default) { UIAlertAction in
-            print("button clicked");
-        }
+    func alertFunction(titleInput: String, messageInput: String) {
+        let alert = UIAlertController(title: titleInput, message: messageInput, preferredStyle: .alert)
+        let okButton = UIAlertAction(title: "Okay", style: .default, handler: nil)
         alert.addAction(okButton)
         self.present(alert, animated: true, completion: nil)
-        }
-    
+    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
         if segue.identifier == "nextScreenVC" {
             let destinationVC = segue.destination as! ViewController
             destinationVC.playerNames = userName
+            destinationVC.selectedDifficulty = selectedDifficulty
         }
     }
     
-    
-    
+    func playSound() {
+        if let soundURL = Bundle.main.url(forResource: "pikaeffect", withExtension: "mp3") {
+            do {
+                audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                audioPlayer?.play()
+            } catch {
+                print("Error: Couldn't play sound file.")
+            }
+        }
+    }
 }

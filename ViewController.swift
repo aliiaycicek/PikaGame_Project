@@ -8,6 +8,7 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
     var timer = Timer()
     var counter = 0
     var score = 0
@@ -15,7 +16,8 @@ class ViewController: UIViewController {
     var hideTimer = Timer()
     var highScore = 0
     var maxHide = 0
-
+    var selectedDifficulty = "Easy"
+    
     @IBOutlet weak var timerLable: UILabel!
     @IBOutlet weak var scoreLable: UILabel!
     @IBOutlet weak var highscoreLable: UILabel!
@@ -49,14 +51,18 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Timer
-        counter = 20
+        setupGame()
+    }
+    
+    func setupGame() {
+        // Timer settings based on difficulty
+        counter = selectedDifficulty == "Easy" ? 20 : 10
         timerLable.text = "Time: \(counter)"
+        let interval = selectedDifficulty == "Easy" ? 2.0 : 0.5
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerFunction), userInfo: nil, repeats: true)
-        hideTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(hidePika), userInfo: nil, repeats: true)
+        hideTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(hidePika), userInfo: nil, repeats: true)
         
-        // Score
+        // Initialize score
         scoreLable.text = "Score: \(score)"
         
         // HighScore Check
@@ -66,7 +72,7 @@ class ViewController: UIViewController {
             highscoreLable.text = "Highscore: \(highScore)"
         } else {
             highScore = 0
-            highscoreLable.text = "Highscore \(highScore)"
+            highscoreLable.text = "Highscore: \(highScore)"
         }
         
         // Initialize Click Counts
@@ -86,69 +92,127 @@ class ViewController: UIViewController {
         // Style
         playerNameLable.text = playerNames
     }
-
+    
     @objc func handleTap(_ sender: UITapGestureRecognizer) {
         guard let tappedPikachu = sender.view as? UIImageView else { return }
+        
+        // Check if Pikachu is visible
+        if tappedPikachu.isHidden {
+            return
+        }
+        
         let isDarkSide = (tappedPikachu == Pikachu10 || tappedPikachu == Pikachu11 || tappedPikachu == Pikachu12 ||
                            tappedPikachu == Pikachu13 || tappedPikachu == Pikachu14 || tappedPikachu == Pikachu15 ||
                            tappedPikachu == Pikachu16 || tappedPikachu == Pikachu17 || tappedPikachu == Pikachu18)
         
-        if let count = clickCounts[tappedPikachu], count < 2 {
-            clickCounts[tappedPikachu] = count + 1
+        // Update click count and score
+        if var count = clickCounts[tappedPikachu] {
+            if count < 2 {
+                clickCounts[tappedPikachu] = count + 1
+                if isDarkSide {
+                    score -= 1
+                } else {
+                    score += 1
+                }
+                scoreLable.text = "Score: \(score)"
+            } else {
+                // Optionally show a visual indication or feedback
+                print("Pikachu already clicked twice!")
+            }
+        } else {
+            clickCounts[tappedPikachu] = 1
             if isDarkSide {
                 score -= 1
             } else {
                 score += 1
             }
             scoreLable.text = "Score: \(score)"
-        } else if let count = clickCounts[tappedPikachu], count >= 2 {
-            // Optionally show a visual indication or feedback
-            print("Pikachu already clicked twice!")
         }
     }
-
+    
     @objc func hidePika() {
         if maxHide <= 5 {
+            // Hide all Pikachus
             for pikachu in pikachuArray {
                 pikachu.isHidden = true
             }
+            
+            // Show a random Pikachu
             let random = Int(arc4random_uniform(UInt32(pikachuArray.count)))
-            pikachuArray[random].isHidden = false
+            let visiblePikachu = pikachuArray[random]
+            visiblePikachu.isHidden = false
+            
+            // Reset click count for the visible Pikachu
+            clickCounts[visiblePikachu] = 0
         }
     }
-
+    
     @objc func timerFunction() {
         timerLable.text = "Time Remaining: \(counter)"
         counter -= 1
-
+        
         if score > highScore {
             highScore = score
             highscoreLable.text = "Highscore: \(highScore)"
             UserDefaults.standard.set(highScore, forKey: "highscore")
         }
-
+        
         if counter == -1 {
             timer.invalidate()
             hideTimer.invalidate()
+            
             let alert = UIAlertController(title: "Time is Up!", message: "Do you want to play again?", preferredStyle: .alert)
             let okButton = UIAlertAction(title: "Go to menu!", style: .default) { _ in
                 self.performSegue(withIdentifier: "backLoginScreen", sender: nil)
             }
             let replayButton = UIAlertAction(title: "Replay?", style: .default) { _ in
-                self.score = 0
-                self.scoreLable.text = "Score: \(self.score)"
-                self.counter = 20
-                self.timerLable.text = String(self.counter)
-                self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.timerFunction), userInfo: nil, repeats: true)
-                self.hideTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.hidePika), userInfo: nil, repeats: true)
-                // Reset click counts
-                for pikachu in self.clickCounts.keys {
-                    self.clickCounts[pikachu] = 0
-                }
+                // Show difficulty selection alert
+                self.showDifficultySelectionAlert()
             }
             alert.addAction(okButton)
             alert.addAction(replayButton)
             self.present(alert, animated: true, completion: nil)
         }
+    }
+    
+    func showDifficultySelectionAlert() {
+        let alert = UIAlertController(title: "Select Difficulty", message: nil, preferredStyle: .alert)
+        
+        let easyAction = UIAlertAction(title: "Easy", style: .default) { _ in
+            self.selectedDifficulty = "Easy"
+            self.resetGame()
+        }
+        
+        let hardAction = UIAlertAction(title: "Hard", style: .default) { _ in
+            self.selectedDifficulty = "Hard"
+            self.resetGame()
+        }
+        
+        alert.addAction(easyAction)
+        alert.addAction(hardAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func resetGame() {
+        // Reset score and counter based on difficulty
+        self.score = 0
+        self.scoreLable.text = "Score: \(self.score)"
+        self.counter = self.selectedDifficulty == "Easy" ? 20 : 10
+        self.timerLable.text = "Time: \(self.counter)"
+        
+        let interval = self.selectedDifficulty == "Easy" ? 2.0 : 0.5
+        self.timer.invalidate()
+        self.hideTimer.invalidate()
+        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.timerFunction), userInfo: nil, repeats: true)
+        self.hideTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.hidePika), userInfo: nil, repeats: true)
+        
+        // Reset click counts
+        for pikachu in self.clickCounts.keys {
+            self.clickCounts[pikachu] = 0
+        }
+        
+        // Start hiding Pikachu
+        self.hidePika()
     }
 }

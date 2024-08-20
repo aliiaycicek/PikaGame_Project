@@ -6,14 +6,13 @@
 //
 
 import UIKit
-//import CoreData
+
 
 class RankingVC: UIViewController {
     
     
     var playerNames = [String]()
     
-    @IBOutlet weak var rankingLable: UILabel!
     
     @IBOutlet weak var rankingTableView: UITableView!
     
