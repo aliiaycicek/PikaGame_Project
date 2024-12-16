@@ -1,14 +1,9 @@
-//
-//  ViewController.swift
-//  Pika Game Project
-//
-//  Created by Ali Ayçiçek on 14.07.2023.
-//
-
 import UIKit
+protocol SkinsSelectionDelegate: AnyObject {
+    func didSelectSkins(normalSkin: UIImage?, darkSideSkin: UIImage?)
+}
+class ViewController: UIViewController, SkinsSelectionDelegate {
 
-class ViewController: UIViewController {
-    
     var timer = Timer()
     var counter = 0
     var score = 0
@@ -36,33 +31,36 @@ class ViewController: UIViewController {
     @IBOutlet weak var pikachu8: UIImageView!
     @IBOutlet weak var pikachu9: UIImageView!
     
-    // DarkSide Pikachues Image Views
-    @IBOutlet weak var Pikachu10: UIImageView!
-    @IBOutlet weak var Pikachu11: UIImageView!
-    @IBOutlet weak var Pikachu12: UIImageView!
-    @IBOutlet weak var Pikachu13: UIImageView!
-    @IBOutlet weak var Pikachu14: UIImageView!
-    @IBOutlet weak var Pikachu15: UIImageView!
-    @IBOutlet weak var Pikachu16: UIImageView!
-    @IBOutlet weak var Pikachu17: UIImageView!
-    @IBOutlet weak var Pikachu18: UIImageView!
+    // DarkSide Pikachus Image Views
+    @IBOutlet weak var pikachu10: UIImageView!
+    @IBOutlet weak var pikachu11: UIImageView!
+    @IBOutlet weak var pikachu12: UIImageView!
+    @IBOutlet weak var pikachu13: UIImageView!
+    @IBOutlet weak var pikachu14: UIImageView!
+    @IBOutlet weak var pikachu15: UIImageView!
+    @IBOutlet weak var pikachu16: UIImageView!
+    @IBOutlet weak var pikachu17: UIImageView!
+    @IBOutlet weak var pikachu18: UIImageView!
     
     var clickCounts = [UIImageView: Int]()
     
+    // Normal ve Dark Side skinler
+    var normalSkin: UIImage?
+    var darkSideSkin: UIImage?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupGame()
     }
     
     func setupGame() {
-        // Timer settings based on difficulty
+       
         counter = selectedDifficulty == "Easy" ? 20 : 10
         timerLable.text = "Time: \(counter)"
-        let interval = selectedDifficulty == "Easy" ? 2.0 : 0.5
+        let interval = selectedDifficulty == "Easy" ? 1.5 : 0.5
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerFunction), userInfo: nil, repeats: true)
         hideTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(hidePika), userInfo: nil, repeats: true)
         
-        // Initialize score
         scoreLable.text = "Score: \(score)"
         
         // HighScore Check
@@ -76,7 +74,7 @@ class ViewController: UIViewController {
         }
         
         // Initialize Click Counts
-        let allPikachus = [pikachu1, pikachu2, pikachu3, pikachu4, pikachu5, pikachu6, pikachu7, pikachu8, pikachu9, Pikachu10, Pikachu11, Pikachu12, Pikachu13, Pikachu14, Pikachu15, Pikachu16, Pikachu17, Pikachu18]
+        let allPikachus = [pikachu1, pikachu2, pikachu3, pikachu4, pikachu5, pikachu6, pikachu7, pikachu8, pikachu9, pikachu10, pikachu11, pikachu12, pikachu13, pikachu14, pikachu15, pikachu16, pikachu17, pikachu18]
         for pikachu in allPikachus {
             if let pikachu = pikachu {
                 pikachu.isUserInteractionEnabled = true
@@ -96,17 +94,15 @@ class ViewController: UIViewController {
     @objc func handleTap(_ sender: UITapGestureRecognizer) {
         guard let tappedPikachu = sender.view as? UIImageView else { return }
         
-        // Check if Pikachu is visible
         if tappedPikachu.isHidden {
             return
         }
         
-        let isDarkSide = (tappedPikachu == Pikachu10 || tappedPikachu == Pikachu11 || tappedPikachu == Pikachu12 ||
-                           tappedPikachu == Pikachu13 || tappedPikachu == Pikachu14 || tappedPikachu == Pikachu15 ||
-                           tappedPikachu == Pikachu16 || tappedPikachu == Pikachu17 || tappedPikachu == Pikachu18)
-        
-        // Update click count and score
-        if var count = clickCounts[tappedPikachu] {
+        let isDarkSide = (tappedPikachu == pikachu10 || tappedPikachu == pikachu11 || tappedPikachu == pikachu12 ||
+                           tappedPikachu == pikachu13 || tappedPikachu == pikachu14 || tappedPikachu == pikachu15 ||
+                           tappedPikachu == pikachu16 || tappedPikachu == pikachu17 || tappedPikachu == pikachu18)
+    
+        if let count = clickCounts[tappedPikachu] {
             if count < 2 {
                 clickCounts[tappedPikachu] = count + 1
                 if isDarkSide {
@@ -116,7 +112,6 @@ class ViewController: UIViewController {
                 }
                 scoreLable.text = "Score: \(score)"
             } else {
-                // Optionally show a visual indication or feedback
                 print("Pikachu already clicked twice!")
             }
         } else {
@@ -132,17 +127,16 @@ class ViewController: UIViewController {
     
     @objc func hidePika() {
         if maxHide <= 5 {
-            // Hide all Pikachus
+        
             for pikachu in pikachuArray {
                 pikachu.isHidden = true
             }
             
-            // Show a random Pikachu
+
             let random = Int(arc4random_uniform(UInt32(pikachuArray.count)))
             let visiblePikachu = pikachuArray[random]
             visiblePikachu.isHidden = false
             
-            // Reset click count for the visible Pikachu
             clickCounts[visiblePikachu] = 0
         }
     }
@@ -166,7 +160,7 @@ class ViewController: UIViewController {
                 self.performSegue(withIdentifier: "backLoginScreen", sender: nil)
             }
             let replayButton = UIAlertAction(title: "Replay?", style: .default) { _ in
-                // Show difficulty selection alert
+
                 self.showDifficultySelectionAlert()
             }
             alert.addAction(okButton)
@@ -195,24 +189,43 @@ class ViewController: UIViewController {
     }
     
     func resetGame() {
-        // Reset score and counter based on difficulty
+       
         self.score = 0
         self.scoreLable.text = "Score: \(self.score)"
         self.counter = self.selectedDifficulty == "Easy" ? 20 : 10
         self.timerLable.text = "Time: \(self.counter)"
         
-        let interval = self.selectedDifficulty == "Easy" ? 2.0 : 0.5
+        let interval = self.selectedDifficulty == "Easy" ? 1.5 : 0.5
         self.timer.invalidate()
         self.hideTimer.invalidate()
         self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.timerFunction), userInfo: nil, repeats: true)
         self.hideTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.hidePika), userInfo: nil, repeats: true)
         
-        // Reset click counts
+    
         for pikachu in self.clickCounts.keys {
             self.clickCounts[pikachu] = 0
         }
         
-        // Start hiding Pikachu
         self.hidePika()
+    }
+    
+    func didSelectSkins(normalSkin: UIImage?, darkSideSkin: UIImage?) {
+        self.normalSkin = normalSkin
+        self.darkSideSkin = darkSideSkin
+        
+        applySkinsToPikachus()
+    }
+    
+    func applySkinsToPikachus() {
+        let normalPikachus = [pikachu1, pikachu2, pikachu3, pikachu4, pikachu5, pikachu6, pikachu7, pikachu8, pikachu9]
+        let darkSidePikachus = [pikachu10, pikachu11, pikachu12, pikachu13, pikachu14, pikachu15, pikachu16, pikachu17, pikachu18]
+        
+        for pikachu in normalPikachus {
+            pikachu?.image = normalSkin
+        }
+        
+        for darkPikachu in darkSidePikachus {
+            darkPikachu?.image = darkSideSkin
+        }
     }
 }

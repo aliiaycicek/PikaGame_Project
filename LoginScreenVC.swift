@@ -32,6 +32,26 @@ class LoginScreenVC: UIViewController {
         performSegue(withIdentifier: "settingsVC", sender: nil)
     }
     
+    @IBAction func skinsVC(_ sender: Any) {
+        playSound()
+        performSegue(withIdentifier: "SkinsVC", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        
+        if segue.identifier == "rankingVC" {
+        } else if segue.identifier == "settingsVC" {
+        } else if segue.identifier == "SkinsVC" {
+        } else if segue.identifier == "nextScreenVC" {
+            let destinationVC = segue.destination as! ViewController
+            destinationVC.playerNames = userName
+            destinationVC.selectedDifficulty = selectedDifficulty
+        }
+    }
+  
+    
+    
     @IBAction func playButton(_ sender: Any) {
         playSound()
         userName = usernameTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
@@ -39,7 +59,8 @@ class LoginScreenVC: UIViewController {
         if userName.isEmpty {
             alertFunction(titleInput: "Error!", messageInput: "Username not found!")
         } else {
-            // Zorluk seçimi için alert
+            // Selected Difficulty
+            
             let alert = UIAlertController(title: "Select Difficulty", message: "Please select the difficulty level.", preferredStyle: .alert)
             
             let easyAction = UIAlertAction(title: "Easy", style: .default) { _ in
@@ -65,15 +86,8 @@ class LoginScreenVC: UIViewController {
         alert.addAction(okButton)
         self.present(alert, animated: true, completion: nil)
     }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "nextScreenVC" {
-            let destinationVC = segue.destination as! ViewController
-            destinationVC.playerNames = userName
-            destinationVC.selectedDifficulty = selectedDifficulty
-        }
-    }
-    
+  
+        
     func playSound() {
         if let soundURL = Bundle.main.url(forResource: "pikaeffect", withExtension: "mp3") {
             do {
