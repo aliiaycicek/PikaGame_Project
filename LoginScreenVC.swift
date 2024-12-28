@@ -38,17 +38,20 @@ class LoginScreenVC: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        super.prepare(for: segue, sender: sender)
-        
-        if segue.identifier == "rankingVC" {
-        } else if segue.identifier == "settingsVC" {
-        } else if segue.identifier == "SkinsVC" {
-        } else if segue.identifier == "nextScreenVC" {
+        if segue.identifier == "nextScreenVC" {
             let destinationVC = segue.destination as! ViewController
             destinationVC.playerNames = userName
             destinationVC.selectedDifficulty = selectedDifficulty
+        } else if segue.identifier == "SkinsVC" {
+            if let skinsVC = segue.destination as? SkinsVC {
+                // Mevcut seçili skin'i kontrol et
+                if let savedSkinName = UserDefaults.standard.string(forKey: "selectedNormalSkin") {
+                    skinsVC.selectedIndex = skinsVC.normalSkinImages.firstIndex(of: savedSkinName)! 
+                }
+            }
         }
     }
+
   
     
     

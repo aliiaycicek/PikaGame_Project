@@ -1,9 +1,12 @@
 import UIKit
+
+// MARK: - Protocol
 protocol SkinsSelectionDelegate: AnyObject {
     func didSelectSkins(normalSkin: UIImage?, darkSideSkin: UIImage?)
 }
-class ViewController: UIViewController, SkinsSelectionDelegate {
 
+// MARK: - ViewController
+class ViewController: UIViewController, SkinsSelectionDelegate {
     var timer = Timer()
     var counter = 0
     var score = 0
@@ -44,17 +47,35 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
     
     var clickCounts = [UIImageView: Int]()
     
-    // Normal ve Dark Side skinler
+    // Skin variables
     var normalSkin: UIImage?
     var darkSideSkin: UIImage?
+    
+    let normalSkinImages = ["Pikachu 2", "Bulbasaur", "Rattata", "Squirtle", "Jigglypuff", "Charmander"]
+    let darkSideSkinImages = ["darkSide Pikachu 1", "DarkSide Bulbasaur", "DarkSide Rattata", "DarkSide Squirtle", "DarkSide Jigglypuff", "DarkSide Charmander"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Kayıtlı skinleri yükle
+        loadSavedSkins()
         setupGame()
     }
-    
+
+    func loadSavedSkins() {
+        if let normalSkinName = UserDefaults.standard.string(forKey: "selectedNormalSkin"),
+           let darkSkinName = UserDefaults.standard.string(forKey: "selectedDarkSideSkin") {
+            normalSkin = UIImage(named: normalSkinName)
+            darkSideSkin = UIImage(named: darkSkinName)
+        } else {
+            // Varsayılan skinler
+            normalSkin = UIImage(named: normalSkinImages[0])
+            darkSideSkin = UIImage(named: darkSideSkinImages[0])
+        }
+        applySkinsToPikachus()
+    }
+
     func setupGame() {
-       
         counter = selectedDifficulty == "Easy" ? 20 : 10
         timerLable.text = "Time: \(counter)"
         let interval = selectedDifficulty == "Easy" ? 1.5 : 0.5
@@ -73,8 +94,10 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
             highscoreLable.text = "Highscore: \(highScore)"
         }
         
-        // Initialize Click Counts
-        let allPikachus = [pikachu1, pikachu2, pikachu3, pikachu4, pikachu5, pikachu6, pikachu7, pikachu8, pikachu9, pikachu10, pikachu11, pikachu12, pikachu13, pikachu14, pikachu15, pikachu16, pikachu17, pikachu18]
+        // Initialize Click Counts and Gesture Recognizers
+        let allPikachus = [pikachu1, pikachu2, pikachu3, pikachu4, pikachu5, pikachu6, pikachu7, pikachu8, pikachu9,
+                          pikachu10, pikachu11, pikachu12, pikachu13, pikachu14, pikachu15, pikachu16, pikachu17, pikachu18]
+        
         for pikachu in allPikachus {
             if let pikachu = pikachu {
                 pikachu.isUserInteractionEnabled = true
@@ -84,60 +107,38 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
             }
         }
         
-        pikachuArray = allPikachus as! [UIImageView]
+        pikachuArray = allPikachus.compactMap { $0 }
         hidePika()
         
-        // Style
         playerNameLable.text = playerNames
+        applySkinsToPikachus()
     }
     
     @objc func handleTap(_ sender: UITapGestureRecognizer) {
         guard let tappedPikachu = sender.view as? UIImageView else { return }
         
-        if tappedPikachu.isHidden {
-            return
-        }
+        if tappedPikachu.isHidden { return }
         
         let isDarkSide = (tappedPikachu == pikachu10 || tappedPikachu == pikachu11 || tappedPikachu == pikachu12 ||
-                           tappedPikachu == pikachu13 || tappedPikachu == pikachu14 || tappedPikachu == pikachu15 ||
-                           tappedPikachu == pikachu16 || tappedPikachu == pikachu17 || tappedPikachu == pikachu18)
+                         tappedPikachu == pikachu13 || tappedPikachu == pikachu14 || tappedPikachu == pikachu15 ||
+                         tappedPikachu == pikachu16 || tappedPikachu == pikachu17 || tappedPikachu == pikachu18)
     
-        if let count = clickCounts[tappedPikachu] {
-            if count < 2 {
-                clickCounts[tappedPikachu] = count + 1
-                if isDarkSide {
-                    score -= 1
-                } else {
-                    score += 1
-                }
-                scoreLable.text = "Score: \(score)"
-            } else {
-                print("Pikachu already clicked twice!")
-            }
-        } else {
-            clickCounts[tappedPikachu] = 1
-            if isDarkSide {
-                score -= 1
-            } else {
-                score += 1
-            }
+        if let count = clickCounts[tappedPikachu], count < 2 {
+            clickCounts[tappedPikachu] = count + 1
+            score += isDarkSide ? -1 : 1
             scoreLable.text = "Score: \(score)"
         }
     }
     
     @objc func hidePika() {
         if maxHide <= 5 {
-        
             for pikachu in pikachuArray {
                 pikachu.isHidden = true
             }
             
-
             let random = Int(arc4random_uniform(UInt32(pikachuArray.count)))
-            let visiblePikachu = pikachuArray[random]
-            visiblePikachu.isHidden = false
-            
-            clickCounts[visiblePikachu] = 0
+            pikachuArray[random].isHidden = false
+            clickCounts[pikachuArray[random]] = 0
         }
     }
     
@@ -160,7 +161,6 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
                 self.performSegue(withIdentifier: "backLoginScreen", sender: nil)
             }
             let replayButton = UIAlertAction(title: "Replay?", style: .default) { _ in
-
                 self.showDifficultySelectionAlert()
             }
             alert.addAction(okButton)
@@ -184,29 +184,24 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
         
         alert.addAction(easyAction)
         alert.addAction(hardAction)
-        
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
     
     func resetGame() {
-       
-        self.score = 0
-        self.scoreLable.text = "Score: \(self.score)"
-        self.counter = self.selectedDifficulty == "Easy" ? 20 : 10
-        self.timerLable.text = "Time: \(self.counter)"
+        score = 0
+        scoreLable.text = "Score: \(score)"
+        counter = selectedDifficulty == "Easy" ? 20 : 10
+        timerLable.text = "Time: \(counter)"
         
-        let interval = self.selectedDifficulty == "Easy" ? 1.5 : 0.5
-        self.timer.invalidate()
-        self.hideTimer.invalidate()
-        self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(self.timerFunction), userInfo: nil, repeats: true)
-        self.hideTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.hidePika), userInfo: nil, repeats: true)
+        let interval = selectedDifficulty == "Easy" ? 1.5 : 0.5
+        timer.invalidate()
+        hideTimer.invalidate()
         
-    
-        for pikachu in self.clickCounts.keys {
-            self.clickCounts[pikachu] = 0
-        }
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerFunction), userInfo: nil, repeats: true)
+        hideTimer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(hidePika), userInfo: nil, repeats: true)
         
-        self.hidePika()
+        clickCounts.keys.forEach { clickCounts[$0] = 0 }
+        hidePika()
     }
     
     func didSelectSkins(normalSkin: UIImage?, darkSideSkin: UIImage?) {
@@ -226,6 +221,16 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
         
         for darkPikachu in darkSidePikachus {
             darkPikachu?.image = darkSideSkin
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let skinsVC = segue.destination as? SkinsVC {
+            skinsVC.delegate = self
+            if let normalSkin = normalSkin,
+               let normalName = normalSkinImages.first(where: { UIImage(named: $0) == normalSkin }) {
+                skinsVC.selectedIndex = normalSkinImages.firstIndex(of: normalName)
+            }
         }
     }
 }
