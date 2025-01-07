@@ -568,24 +568,6 @@
                                     <action selector="playButton:" destination="76e-BY-ncw" eventType="touchUpInside" id="L9v-4L-Wjr"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JZ1-zJ-EDD">
-                                <rect key="frame" x="67" y="427" width="258" height="111"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="111" id="iF0-48-Yny"/>
-                                </constraints>
-                                <buttonConfiguration key="configuration" style="filled" subtitle="" cornerStyle="large">
-                                    <imageReference key="image" image="pikagame_app_ıcon 64px" symbolScale="large"/>
-                                    <backgroundConfiguration key="background" strokeWidth="3">
-                                        <color key="strokeColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </backgroundConfiguration>
-                                    <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="20" scale="large" weight="heavy"/>
-                                    <attributedString key="attributedTitle"/>
-                                    <color key="baseForegroundColor" systemColor="systemYellowColor"/>
-                                </buttonConfiguration>
-                                <connections>
-                                    <action selector="skinsVC:" destination="76e-BY-ncw" eventType="touchUpInside" id="vHv-P3-xhJ"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GEg-9e-8ZM">
                                 <rect key="frame" x="65" y="695" width="263" height="114"/>
                                 <constraints>
@@ -602,6 +584,24 @@
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="leaderBoardButton:" destination="76e-BY-ncw" eventType="touchUpInside" id="nr8-kc-LHd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JZ1-zJ-EDD">
+                                <rect key="frame" x="67" y="426" width="258" height="111"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="111" id="iF0-48-Yny"/>
+                                </constraints>
+                                <buttonConfiguration key="configuration" style="filled" subtitle="" cornerStyle="large">
+                                    <imageReference key="image" image="pikagame_app_ıcon 64px" symbolScale="large"/>
+                                    <backgroundConfiguration key="background" strokeWidth="3">
+                                        <color key="strokeColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </backgroundConfiguration>
+                                    <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="20" scale="large" weight="heavy"/>
+                                    <attributedString key="attributedTitle"/>
+                                    <color key="baseForegroundColor" systemColor="systemYellowColor"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="skinsVC:" destination="76e-BY-ncw" eventType="touchUpInside" id="vHv-P3-xhJ"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -671,7 +671,7 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="lW6-rf-gjl"/>
-        <segue reference="RDC-ZX-bJF"/>
+        <segue reference="Oc8-bN-7Bw"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="AccentColor"/>
     <resources>
