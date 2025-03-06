@@ -76,24 +76,8 @@ open YakalamaOyunu.xcodeproj
 - Asset optimizasyonları
 - Cache mekanizmaları
 
-## 🤝 Katkıda Bulunma
-
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/AmazingFeature`)
-3. Değişikliklerinizi commit edin (`git commit -m 'Add some AmazingFeature'`)
-4. Branch'inizi push edin (`git push origin feature/AmazingFeature`)
-5. Pull Request oluşturun
-
-## 📝 Lisans
-
-Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
-
 ## 👤 Geliştirici
 
 Ali Ayçiçek
 
-## 🙏 Teşekkürler
 
-- Pokemon karakterleri için Nintendo'ya
-- Kullanılan açık kaynak kütüphanelere
-- Beta test eden arkadaşlara
