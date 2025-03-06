@@ -1,69 +1,196 @@
 // MARK: - SkinsVC
 
 import UIKit
-class SkinsVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    @IBOutlet weak var tableView: UITableView!
+
+// MARK: - Character Assets
+enum CharacterAssets: String, CaseIterable {
+    case pikachu = "Pikachu 2"
+    case bulbasaur = "Bulbasaur"
+    case rattata = "Rattata"
+    case squirtle = "Squirtle"
+    case jigglypuff = "Jigglypuff"
+    case charmander = "Charmander"
     
-    weak var delegate: SkinsSelectionDelegate?
+    var darkSideVersion: String {
+        switch self {
+        case .pikachu:
+            return "darkSide Pikachu 1"
+        default:
+            return "DarkSide \(self.rawValue)"
+        }
+    }
+}
+
+// MARK: - SkinCell
+class SkinCollectionViewCell: UICollectionViewCell {
+    static let identifier = "SkinCell"
     
-    let normalSkinImages = ["Pikachu 2", "Bulbasaur", "Rattata", "Squirtle", "Jigglypuff", "Charmander"]
-    let darkSideSkinImages = ["darkSide Pikachu 1", "DarkSide Bulbasaur", "DarkSide Rattata", "DarkSide Squirtle", "DarkSide Jigglypuff", "DarkSide Charmander"]
+    let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 10
+        return imageView
+    }()
     
-    var selectedIndex: Int?
+    let nameLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        return label
+    }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "SkinCell")
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Select", style: .done, target: self, action: #selector(confirmSelection))
-        
-        // Mevcut seçili skin'i kontrol et
-        if let savedSkinName = UserDefaults.standard.string(forKey: "selectedNormalSkin") {
-            selectedIndex = normalSkinImages.firstIndex(of: savedSkinName)
+    override var isSelected: Bool {
+        didSet {
+            contentView.layer.borderWidth = isSelected ? 3 : 0
+            contentView.layer.borderColor = isSelected ? UIColor.systemBlue.cgColor : nil
         }
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return normalSkinImages.count
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupCell()
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "SkinCell", for: indexPath)
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupCell()
+    }
+    
+    private func setupCell() {
+        contentView.backgroundColor = .systemBackground
+        contentView.layer.cornerRadius = 10
+        contentView.layer.shadowColor = UIColor.black.cgColor
+        contentView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        contentView.layer.shadowRadius = 4
+        contentView.layer.shadowOpacity = 0.2
         
-        let normalImageName = normalSkinImages[indexPath.row]
-        cell.imageView?.image = UIImage(named: normalImageName)
-        cell.textLabel?.text = normalImageName
-        cell.accessoryType = selectedIndex == indexPath.row ? .checkmark : .none
+        // Add subviews
+        contentView.addSubview(imageView)
+        contentView.addSubview(nameLabel)
         
-        return cell
+        // Setup constraints
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor),
+            
+            nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
+            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+        ])
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndex = indexPath.row
-        tableView.reloadData()
+    func configure(with character: CharacterAssets) {
+        imageView.image = UIImage(named: character.rawValue)
+        nameLabel.text = character.rawValue
+    }
+}
+
+class SkinsVC: UIViewController {
+    
+    // MARK: - Properties
+    weak var delegate: SkinsSelectionDelegate?
+    var selectedIndex: Int?
+    
+    // MARK: - Outlets
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    
+    // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        loadSavedSelection()
     }
     
-    @objc func confirmSelection() {
-        guard let index = selectedIndex else {
-            let alert = UIAlertController(title: "Seçim Yapılmadı", message: "Lütfen bir karakter seçin", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Tamam", style: .default))
-            present(alert, animated: true)
+    // MARK: - Setup
+    private func setupUI() {
+        title = "Karakter Seç"
+        view.backgroundColor = .systemBackground
+        
+        // Setup CollectionView
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 16
+        layout.minimumInteritemSpacing = 16
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        
+        collectionView.collectionViewLayout = layout
+        collectionView.backgroundColor = .systemBackground
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(SkinCollectionViewCell.self, forCellWithReuseIdentifier: SkinCollectionViewCell.identifier)
+        collectionView.allowsMultipleSelection = false
+    }
+    
+    private func loadSavedSelection() {
+        if let savedSkinName = UserDefaults.standard.string(forKey: "selectedNormalSkin"),
+           let index = CharacterAssets.allCases.firstIndex(where: { $0.rawValue == savedSkinName }) {
+            selectedIndex = index
+            collectionView.selectItem(at: IndexPath(item: index, section: 0), animated: false, scrollPosition: [])
+        }
+    }
+    
+    private func selectSkin(at index: Int) {
+        let character = CharacterAssets.allCases[index]
+        let normalSkinName = character.rawValue
+        let darkSideSkinName = character.darkSideVersion
+        
+        guard let normalSkin = UIImage(named: normalSkinName),
+              let darkSideSkin = UIImage(named: darkSideSkinName) else {
+            showAlert(title: "Hata", message: "Karakter yüklenirken bir hata oluştu")
             return
         }
         
-        // Seçilen skinleri UserDefaults'a kaydet
-        UserDefaults.standard.set(normalSkinImages[index], forKey: "selectedNormalSkin")
-        UserDefaults.standard.set(darkSideSkinImages[index], forKey: "selectedDarkSideSkin")
+        // Save selection
+        UserDefaults.standard.set(normalSkinName, forKey: "selectedNormalSkin")
+        UserDefaults.standard.set(darkSideSkinName, forKey: "selectedDarkSideSkin")
         UserDefaults.standard.synchronize()
         
-        let normalSkin = UIImage(named: normalSkinImages[index])
-        let darkSideSkin = UIImage(named: darkSideSkinImages[index])
-        
+        // Notify delegate and dismiss
         delegate?.didSelectSkins(normalSkin: normalSkin, darkSideSkin: darkSideSkin)
         navigationController?.popViewController(animated: true)
     }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Tamam", style: .default))
+        present(alert, animated: true)
+    }
+}
 
+// MARK: - UICollectionView DataSource & Delegate
+extension SkinsVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return CharacterAssets.allCases.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SkinCollectionViewCell.identifier, for: indexPath) as? SkinCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        
+        let character = CharacterAssets.allCases[indexPath.item]
+        cell.configure(with: character)
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let padding: CGFloat = 32 // Total horizontal padding
+        let minimumSpacing: CGFloat = 16
+        let availableWidth = collectionView.bounds.width - padding
+        let itemWidth = (availableWidth - minimumSpacing) / 2
+        return CGSize(width: itemWidth, height: itemWidth * 1.3) // 1.3 aspect ratio for the card
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedIndex = indexPath.item
+        selectSkin(at: indexPath.item)
+    }
 }

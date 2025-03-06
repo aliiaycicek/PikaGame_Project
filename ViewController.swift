@@ -204,23 +204,24 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
         hidePika()
     }
     
+    // MARK: - SkinsSelectionDelegate
     func didSelectSkins(normalSkin: UIImage?, darkSideSkin: UIImage?) {
         self.normalSkin = normalSkin
         self.darkSideSkin = darkSideSkin
-        
         applySkinsToPikachus()
     }
     
     func applySkinsToPikachus() {
+        // Normal Pikachus
         let normalPikachus = [pikachu1, pikachu2, pikachu3, pikachu4, pikachu5, pikachu6, pikachu7, pikachu8, pikachu9]
-        let darkSidePikachus = [pikachu10, pikachu11, pikachu12, pikachu13, pikachu14, pikachu15, pikachu16, pikachu17, pikachu18]
-        
         for pikachu in normalPikachus {
             pikachu?.image = normalSkin
         }
         
-        for darkPikachu in darkSidePikachus {
-            darkPikachu?.image = darkSideSkin
+        // Dark Side Pikachus
+        let darkSidePikachus = [pikachu10, pikachu11, pikachu12, pikachu13, pikachu14, pikachu15, pikachu16, pikachu17, pikachu18]
+        for pikachu in darkSidePikachus {
+            pikachu?.image = darkSideSkin
         }
     }
     

@@ -46,7 +46,13 @@ class LoginScreenVC: UIViewController {
             if let skinsVC = segue.destination as? SkinsVC {
                 // Mevcut seçili skin'i kontrol et
                 if let savedSkinName = UserDefaults.standard.string(forKey: "selectedNormalSkin") {
-                    skinsVC.selectedIndex = skinsVC.normalSkinImages.firstIndex(of: savedSkinName)! 
+                    skinsVC.selectedIndex = CharacterAssets.allCases.firstIndex { $0.rawValue == savedSkinName }
+                }
+                
+                // ViewController'ı bul ve delegate olarak ata
+                if let navigationController = self.navigationController,
+                   let viewController = navigationController.viewControllers.first(where: { $0 is ViewController }) as? ViewController {
+                    skinsVC.delegate = viewController
                 }
             }
         }
