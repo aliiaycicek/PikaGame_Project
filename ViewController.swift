@@ -1,11 +1,14 @@
 import UIKit
+import AVFoundation
 
 // MARK: - Protocol
+
 protocol SkinsSelectionDelegate: AnyObject {
     func didSelectSkins(normalSkin: UIImage?, darkSideSkin: UIImage?)
 }
 
 // MARK: - ViewController
+
 class ViewController: UIViewController, SkinsSelectionDelegate {
     var timer = Timer()
     var counter = 0
@@ -15,35 +18,54 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
     var highScore = 0
     var maxHide = 0
     var selectedDifficulty = "Easy"
+    var audioPlayer: AVAudioPlayer?
     
-    @IBOutlet weak var timerLable: UILabel!
-    @IBOutlet weak var scoreLable: UILabel!
-    @IBOutlet weak var highscoreLable: UILabel!
-    @IBOutlet weak var playerNameLable: UILabel!
+    // MARK: - IBOutlets
+    @IBOutlet private weak var timerLable: UILabel! {
+        didSet {
+            timerLable.text = "Time: 0"
+        }
+    }
+    
+    @IBOutlet private weak var scoreLable: UILabel! {
+        didSet {
+            scoreLable.text = "Score: 0"
+        }
+    }
+    
+    @IBOutlet private weak var highscoreLable: UILabel! {
+        didSet {
+            highscoreLable.text = "High Score: 0"
+        }
+    }
+    
+    @IBOutlet private weak var playerNameLable: UILabel! {
+        didSet {
+            playerNameLable.text = "Player: Guest"
+        }
+    }
+    
+    // MARK: - Pikachu Image Views
+    @IBOutlet private weak var pikachu1: UIImageView!
+    @IBOutlet private weak var pikachu2: UIImageView!
+    @IBOutlet private weak var pikachu3: UIImageView!
+    @IBOutlet private weak var pikachu4: UIImageView!
+    @IBOutlet private weak var pikachu5: UIImageView!
+    @IBOutlet private weak var pikachu6: UIImageView!
+    @IBOutlet private weak var pikachu7: UIImageView!
+    @IBOutlet private weak var pikachu8: UIImageView!
+    @IBOutlet private weak var pikachu9: UIImageView!
+    @IBOutlet private weak var pikachu10: UIImageView!
+    @IBOutlet private weak var pikachu11: UIImageView!
+    @IBOutlet private weak var pikachu12: UIImageView!
+    @IBOutlet private weak var pikachu13: UIImageView!
+    @IBOutlet private weak var pikachu14: UIImageView!
+    @IBOutlet private weak var pikachu15: UIImageView!
+    @IBOutlet private weak var pikachu16: UIImageView!
+    @IBOutlet private weak var pikachu17: UIImageView!
+    @IBOutlet private weak var pikachu18: UIImageView!
     
     var playerNames = " "
-    
-    // Pikachu Image Views
-    @IBOutlet weak var pikachu1: UIImageView!
-    @IBOutlet weak var pikachu2: UIImageView!
-    @IBOutlet weak var pikachu3: UIImageView!
-    @IBOutlet weak var pikachu4: UIImageView!
-    @IBOutlet weak var pikachu5: UIImageView!
-    @IBOutlet weak var pikachu6: UIImageView!
-    @IBOutlet weak var pikachu7: UIImageView!
-    @IBOutlet weak var pikachu8: UIImageView!
-    @IBOutlet weak var pikachu9: UIImageView!
-    
-    // DarkSide Pikachus Image Views
-    @IBOutlet weak var pikachu10: UIImageView!
-    @IBOutlet weak var pikachu11: UIImageView!
-    @IBOutlet weak var pikachu12: UIImageView!
-    @IBOutlet weak var pikachu13: UIImageView!
-    @IBOutlet weak var pikachu14: UIImageView!
-    @IBOutlet weak var pikachu15: UIImageView!
-    @IBOutlet weak var pikachu16: UIImageView!
-    @IBOutlet weak var pikachu17: UIImageView!
-    @IBOutlet weak var pikachu18: UIImageView!
     
     var clickCounts = [UIImageView: Int]()
     
@@ -56,10 +78,43 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Kayıtlı skinleri yükle
+        setupDesign()
         loadSavedSkins()
         setupGame()
+    }
+
+    private func setupDesign() {
+        guard let timerLable = timerLable,
+              let scoreLable = scoreLable,
+              let highscoreLable = highscoreLable,
+              let playerNameLable = playerNameLable else {
+            print("Error: One or more labels are not connected in Interface Builder")
+            return
+        }
+        
+        // Arka plan
+        AppTheme.applyGradientBackground(to: view)
+        
+        // Label'ların temel özelliklerini ayarla
+        [timerLable, scoreLable, highscoreLable, playerNameLable].forEach { label in
+            label.textColor = AppTheme.textColor
+            if let customFont = UIFont(name: "Electric", size: 18) {
+                label.font = customFont
+            }
+        }
+        
+        // Pikachu'ları ayarla
+        let allPikachus = [pikachu1, pikachu2, pikachu3, pikachu4, pikachu5, pikachu6,
+                          pikachu7, pikachu8, pikachu9, pikachu10, pikachu11, pikachu12,
+                          pikachu13, pikachu14, pikachu15, pikachu16, pikachu17, pikachu18]
+        
+        pikachuArray = allPikachus.compactMap { $0 }
+        
+        // Pikachu'ların temel özelliklerini ayarla
+        pikachuArray.forEach { imageView in
+            imageView.isUserInteractionEnabled = true
+            imageView.alpha = 0
+        }
     }
 
     func loadSavedSkins() {
@@ -127,50 +182,118 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
             clickCounts[tappedPikachu] = count + 1
             score += isDarkSide ? -1 : 1
             scoreLable.text = "Score: \(score)"
+            
+            // Play catch sound effect
+            playSound(isDarkSide ? "dark_catch" : "catch_sound")
+        }
+    }
+    
+    private func playSound(_ soundName: String) {
+        // Only play if sound effects are enabled
+        if UserDefaults.standard.bool(forKey: "soundEffectsEnabled") {
+            if let soundURL = Bundle.main.url(forResource: soundName, withExtension: "mp3") {
+                do {
+                    audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+                    audioPlayer?.play()
+                } catch {
+                    print("Error: Couldn't play sound file.")
+                }
+            }
         }
     }
     
     @objc func hidePika() {
         if maxHide <= 5 {
+            // Önce tüm Pikachu'ları gizle
             for pikachu in pikachuArray {
                 pikachu.isHidden = true
+                pikachu.alpha = 0
             }
             
+            // Rastgele bir Pikachu seç ve göster
             let random = Int(arc4random_uniform(UInt32(pikachuArray.count)))
-            pikachuArray[random].isHidden = false
-            clickCounts[pikachuArray[random]] = 0
+            let selectedPikachu = pikachuArray[random]
+            
+            // Seçilen Pikachu'yu göster ve animasyonla belirt
+            selectedPikachu.isHidden = false
+            selectedPikachu.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            
+            UIView.animate(withDuration: 0.3) {
+                selectedPikachu.alpha = 1
+                selectedPikachu.transform = .identity
+            }
+            
+            clickCounts[selectedPikachu] = 0
         }
     }
     
     @objc func timerFunction() {
-        timerLable.text = "Time Remaining: \(counter)"
+        guard let timerLable = timerLable,
+              let highscoreLable = highscoreLable else { return }
+        
+        timerLable.text = "Time: \(counter)"
         counter -= 1
         
+        // Score animasyonu
         if score > highScore {
             highScore = score
-            highscoreLable.text = "Highscore: \(highScore)"
+            highscoreLable.text = "High Score: \(highScore)"
             UserDefaults.standard.set(highScore, forKey: "highscore")
+            
+            // Yeni yüksek skor animasyonu
+            UIView.animate(withDuration: 0.2) {
+                self.highscoreLable.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+            } completion: { _ in
+                UIView.animate(withDuration: 0.1) {
+                    self.highscoreLable.transform = .identity
+                }
+            }
         }
         
         if counter == -1 {
             timer.invalidate()
             hideTimer.invalidate()
             
-            let alert = UIAlertController(title: "Time is Up!", message: "Do you want to play again?", preferredStyle: .alert)
-            let okButton = UIAlertAction(title: "Go to menu!", style: .default) { _ in
+            let alert = UIAlertController(title: "Time's Up!", message: "Would you like to play again?", preferredStyle: .alert)
+            
+            // Alert tasarımı
+            alert.view.tintColor = AppTheme.primaryColor
+            alert.view.layer.cornerRadius = 15
+            
+            if let title = alert.title {
+                let customFont = UIFont(name: "Electric", size: 24) ?? UIFont.systemFont(ofSize: 24)
+                let attributedString = NSAttributedString(string: title, attributes: [
+                    .font: customFont,
+                    .foregroundColor: AppTheme.primaryColor
+                ])
+                alert.setValue(attributedString, forKey: "attributedTitle")
+            }
+            
+            // Alert mesajının fontunu da güncelle
+            if let message = alert.message {
+                let customFont = UIFont(name: "Electric", size: 16) ?? UIFont.systemFont(ofSize: 16)
+                let attributedMessage = NSAttributedString(string: message, attributes: [
+                    .font: customFont,
+                    .foregroundColor: AppTheme.textColor
+                ])
+                alert.setValue(attributedMessage, forKey: "attributedMessage")
+            }
+            
+            let okButton = UIAlertAction(title: "Back to Menu", style: .default) { _ in
                 self.performSegue(withIdentifier: "backLoginScreen", sender: nil)
             }
-            let replayButton = UIAlertAction(title: "Replay?", style: .default) { _ in
+            let replayButton = UIAlertAction(title: "Play Again", style: .default) { _ in
                 self.showDifficultySelectionAlert()
             }
+            
             alert.addAction(okButton)
             alert.addAction(replayButton)
-            self.present(alert, animated: true, completion: nil)
+            self.present(alert, animated: true)
         }
     }
     
     func showDifficultySelectionAlert() {
-        let alert = UIAlertController(title: "Select Difficulty", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Select Difficulty", message: "Choose your game difficulty", preferredStyle: .alert)
         
         let easyAction = UIAlertAction(title: "Easy", style: .default) { _ in
             self.selectedDifficulty = "Easy"
@@ -233,5 +356,14 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
                 skinsVC.selectedIndex = normalSkinImages.firstIndex(of: normalName)
             }
         }
+    }
+}
+
+extension UIFont {
+    static func customFont(size: CGFloat) -> UIFont {
+        if let font = UIFont(name: "Electric", size: size) {
+            return font
+        }
+        return .systemFont(ofSize: size)
     }
 }

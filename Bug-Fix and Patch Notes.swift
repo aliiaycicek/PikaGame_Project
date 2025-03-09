@@ -26,13 +26,13 @@
 
 // AppIcon ve yeni skinler eklenicek. [TAMAMLANDI] ++
 
-// SkinVC adında bir view controller eklenip buraya kullanıcının pikachularını seçebilmesi için farklı pikachu skinleri eklenicek! <------- Güncel Patch
+// SkinVC adında bir view controller eklenip buraya kullanıcının pikachularını seçebilmesi için farklı pikachu skinleri eklenicek! [TAMAMLANDI] ++
 
 // SkinVC deki bazı skinler para ile açılabilicekken bazı skinler için yeni bir achivment adında bir vcdeki bazı taskları kullanıcnın tamamlamasına göre belirli pika skinleri kazanbilicek!(bu sayede ödül sistemi olucak ve oyunun oynanırlığı artıcak)
 
 // Zaman bittiğinde kullanıcnın ek 5 saniye zaman alabilmesi için 1 sefere mahsus para/reklam izle komutları eklenerek gelir kısmın ayarlanıcak!
 
-// SettingsVC oluşturulacak ve ses ayarları ve oyun optimizasyonuna dair bazı paneller konulacak
+// SettingsVC oluşturulacak ve ses ayarları ve oyun optimizasyonuna dair bazı paneller konulacak! <--- Güncel Patch
 
 // Ranking Sistemi eklenicek ve kullanıcı kendi yaptığı highscore ları görebilicek!
 

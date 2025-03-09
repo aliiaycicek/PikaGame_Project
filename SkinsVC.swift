@@ -29,21 +29,32 @@ class SkinCollectionViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
-        imageView.layer.cornerRadius = 10
+        imageView.layer.cornerRadius = 15
         return imageView
     }()
     
     let nameLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = UIColor(red: 30/255, green: 55/255, blue: 153/255, alpha: 1)
         return label
     }()
     
     override var isSelected: Bool {
         didSet {
-            contentView.layer.borderWidth = isSelected ? 3 : 0
-            contentView.layer.borderColor = isSelected ? UIColor.systemBlue.cgColor : nil
+            contentView.layer.borderWidth = isSelected ? 4 : 0
+            contentView.layer.borderColor = isSelected ? UIColor(red: 30/255, green: 55/255, blue: 153/255, alpha: 1).cgColor : nil
+            
+            if isSelected {
+                UIView.animate(withDuration: 0.2) {
+                    self.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+                }
+            } else {
+                UIView.animate(withDuration: 0.2) {
+                    self.transform = .identity
+                }
+            }
         }
     }
     
@@ -58,12 +69,12 @@ class SkinCollectionViewCell: UICollectionViewCell {
     }
     
     private func setupCell() {
-        contentView.backgroundColor = .systemBackground
-        contentView.layer.cornerRadius = 10
+        contentView.backgroundColor = UIColor(red: 255/255, green: 203/255, blue: 5/255, alpha: 0.9)
+        contentView.layer.cornerRadius = 15
         contentView.layer.shadowColor = UIColor.black.cgColor
-        contentView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        contentView.layer.shadowRadius = 4
-        contentView.layer.shadowOpacity = 0.2
+        contentView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        contentView.layer.shadowRadius = 6
+        contentView.layer.shadowOpacity = 0.3
         
         // Add subviews
         contentView.addSubview(imageView)
@@ -74,15 +85,15 @@ class SkinCollectionViewCell: UICollectionViewCell {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
             imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor),
             
-            nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
-            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
+            nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 12),
+            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            nameLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
         ])
     }
     
@@ -111,18 +122,27 @@ class SkinsVC: UIViewController {
     
     // MARK: - Setup
     private func setupUI() {
-        title = "Karakter Seç"
-        view.backgroundColor = .systemBackground
+        title = "Select Pokemon"
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor(red: 30/255, green: 55/255, blue: 153/255, alpha: 1),
+            .font: UIFont.systemFont(ofSize: 22, weight: .bold)
+        ]
+        
+        // Background image
+        let backgroundImage = UIImageView(frame: view.bounds)
+        backgroundImage.image = UIImage(named: "pokemon_background")
+        backgroundImage.contentMode = .scaleAspectFill
+        view.insertSubview(backgroundImage, at: 0)
         
         // Setup CollectionView
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 16
-        layout.minimumInteritemSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        layout.minimumLineSpacing = 20
+        layout.minimumInteritemSpacing = 20
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
         
         collectionView.collectionViewLayout = layout
-        collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = .clear
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(SkinCollectionViewCell.self, forCellWithReuseIdentifier: SkinCollectionViewCell.identifier)
@@ -144,7 +164,7 @@ class SkinsVC: UIViewController {
         
         guard let normalSkin = UIImage(named: normalSkinName),
               let darkSideSkin = UIImage(named: darkSideSkinName) else {
-            showAlert(title: "Hata", message: "Karakter yüklenirken bir hata oluştu")
+            showAlert(title: "Error", message: "Failed to load character")
             return
         }
         
@@ -160,7 +180,7 @@ class SkinsVC: UIViewController {
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Tamam", style: .default))
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }
@@ -183,7 +203,7 @@ extension SkinsVC: UICollectionViewDataSource, UICollectionViewDelegate, UIColle
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let padding: CGFloat = 32 // Total horizontal padding
-        let minimumSpacing: CGFloat = 16
+        let minimumSpacing: CGFloat = 20
         let availableWidth = collectionView.bounds.width - padding
         let itemWidth = (availableWidth - minimumSpacing) / 2
         return CGSize(width: itemWidth, height: itemWidth * 1.3) // 1.3 aspect ratio for the card
