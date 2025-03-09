@@ -41,6 +41,9 @@ class SettingVC: UIViewController {
             titleLabel.textColor = AppTheme.textColor
             titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
         }
+        
+        // Back butonu ekle
+        addBackButton()
     }
     
     private func setupTableView() {
@@ -124,5 +127,39 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource {
         
         UserDefaults.standard.set(sender.isOn, forKey: key)
         NotificationCenter.default.post(name: Notification.Name(key), object: nil)
+    }
+    
+    private func addBackButton() {
+        let backButton = UIButton(type: .system)
+        backButton.setTitle("Ana Menü", for: .normal)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        backButton.layer.cornerRadius = 10
+        backButton.tintColor = AppTheme.textColor
+        
+        if let customFont = UIFont(name: "Electric", size: 18) {
+            backButton.titleLabel?.font = customFont
+        }
+        
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        
+        view.addSubview(backButton)
+        
+        NSLayoutConstraint.activate([
+            backButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            backButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            backButton.widthAnchor.constraint(equalToConstant: 200),
+            backButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    @objc private func backButtonTapped() {
+        // Önce navigationController ile deneyelim
+        if let navigationController = self.navigationController {
+            navigationController.popViewController(animated: true)
+        } else {
+            // Navigation controller yoksa dismiss yapalım
+            self.dismiss(animated: true)
+        }
     }
 }

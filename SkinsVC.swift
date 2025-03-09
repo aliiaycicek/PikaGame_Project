@@ -134,6 +134,9 @@ class SkinsVC: UIViewController {
         backgroundImage.contentMode = .scaleAspectFill
         view.insertSubview(backgroundImage, at: 0)
         
+        // Back butonu ekle
+        addBackButton()
+        
         // Setup CollectionView
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -182,6 +185,37 @@ class SkinsVC: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+    
+    private func addBackButton() {
+        let backButton = UIButton(type: .system)
+        backButton.setTitle("Ana Menü", for: .normal)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        backButton.backgroundColor = UIColor(red: 30/255, green: 55/255, blue: 153/255, alpha: 0.8)
+        backButton.layer.cornerRadius = 10
+        backButton.tintColor = .white
+        backButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        
+        view.addSubview(backButton)
+        
+        NSLayoutConstraint.activate([
+            backButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            backButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            backButton.widthAnchor.constraint(equalToConstant: 200),
+            backButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    @objc private func backButtonTapped() {
+        // Önce navigationController ile deneyelim
+        if let navigationController = self.navigationController {
+            navigationController.popViewController(animated: true)
+        } else {
+            // Navigation controller yoksa dismiss yapalım
+            self.dismiss(animated: true)
+        }
     }
 }
 

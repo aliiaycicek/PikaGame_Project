@@ -185,6 +185,18 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
             
             // Play catch sound effect
             playSound(isDarkSide ? "dark_catch" : "catch_sound")
+            
+            // Yeni skor yüksek skordan büyükse kaydet
+            if score > highScore {
+                highScore = score
+                highscoreLable?.text = "High Score: \(highScore)"
+                UserDefaults.standard.set(highScore, forKey: "highscore")
+                
+                // Veritabanına kaydet
+                if let playerName = playerNameLable?.text?.replacingOccurrences(of: "Player: ", with: "") {
+                    DatabaseManager.shared.saveHighScore(playerName: playerName, score: highScore, difficulty: selectedDifficulty)
+                }
+            }
         }
     }
     
@@ -250,11 +262,20 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
             }
         }
         
-        if counter == -1 {
+        // Oyun bittiğinde sadece bir kez çalışacak
+        if counter == 0 {
+            // Zamanlayıcıları durdur
             timer.invalidate()
             hideTimer.invalidate()
             
-            let alert = UIAlertController(title: "Time's Up!", message: "Would you like to play again?", preferredStyle: .alert)
+            // Skoru kaydet
+            if let playerName = playerNameLable?.text?.replacingOccurrences(of: "Player: ", with: "") {
+                print("Skor kaydediliyor: \(playerName), \(score), \(selectedDifficulty)")
+                DatabaseManager.shared.saveHighScore(playerName: playerName, score: score, difficulty: selectedDifficulty)
+            }
+            
+            // Süre doldu uyarısı
+            let alert = UIAlertController(title: "Süre Doldu!", message: "Skorun: \(score). Ne yapmak istersin?", preferredStyle: .alert)
             
             // Alert tasarımı
             alert.view.tintColor = AppTheme.primaryColor
@@ -279,28 +300,34 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
                 alert.setValue(attributedMessage, forKey: "attributedMessage")
             }
             
-            let okButton = UIAlertAction(title: "Back to Menu", style: .default) { _ in
-                self.performSegue(withIdentifier: "backLoginScreen", sender: nil)
-            }
-            let replayButton = UIAlertAction(title: "Play Again", style: .default) { _ in
-                self.showDifficultySelectionAlert()
+            let scoreButton = UIAlertAction(title: "Skorları Gör", style: .default) { _ in
+                self.performSegue(withIdentifier: "toRankingVC", sender: nil)
             }
             
+            let okButton = UIAlertAction(title: "Ana Menü", style: .default) { _ in
+                self.performSegue(withIdentifier: "backLoginScreen", sender: nil)
+            }
+            
+            let replayButton = UIAlertAction(title: "Tekrar Oyna", style: .default) { _ in
+                self.zorlukSeciminiGoster()
+            }
+            
+            alert.addAction(scoreButton)
             alert.addAction(okButton)
             alert.addAction(replayButton)
             self.present(alert, animated: true)
         }
     }
     
-    func showDifficultySelectionAlert() {
-        let alert = UIAlertController(title: "Select Difficulty", message: "Choose your game difficulty", preferredStyle: .alert)
+    func zorlukSeciminiGoster() {
+        let alert = UIAlertController(title: "Zorluk Seç", message: "Oyun zorluğunu seçin", preferredStyle: .alert)
         
-        let easyAction = UIAlertAction(title: "Easy", style: .default) { _ in
+        let easyAction = UIAlertAction(title: "Kolay", style: .default) { _ in
             self.selectedDifficulty = "Easy"
             self.resetGame()
         }
         
-        let hardAction = UIAlertAction(title: "Hard", style: .default) { _ in
+        let hardAction = UIAlertAction(title: "Zor", style: .default) { _ in
             self.selectedDifficulty = "Hard"
             self.resetGame()
         }

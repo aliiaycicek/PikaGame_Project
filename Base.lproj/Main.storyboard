@@ -248,6 +248,7 @@
                         <outlet property="scoreLable" destination="F1Y-Cs-lML" id="LgU-1D-6rY"/>
                         <outlet property="timerLable" destination="VY7-Ic-0cf" id="VM2-St-f7J"/>
                         <segue destination="76e-BY-ncw" kind="show" identifier="backLoginScreen" id="lW6-rf-gjl"/>
+                        <segue destination="NJC-1V-HkI" kind="show" identifier="toRankingVC" id="yev-2X-89b"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -262,31 +263,34 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Ranking" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0rT-z0-SGj">
-                                <rect key="frame" x="136" y="58" width="154" height="42"/>
-                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="33"/>
-                                <nil key="textColor"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0rT-z0-SGj">
+                                <rect key="frame" x="144" y="38" width="154" height="42"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="Ranking">
+                                        <attributes>
+                                            <font key="NSFont" size="29" name="Helvetica-Bold"/>
+                                            <font key="NSOriginalFont" size="33" name="AppleBraille-Outline6Dot"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="nvP-tW-KPk">
-                                <rect key="frame" x="16" y="153" width="361" height="520"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <color key="sectionIndexColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <color key="sectionIndexBackgroundColor" name="AccentColor"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="HighScoreCell" rowHeight="66" id="M5Z-G3-WEA">
-                                        <rect key="frame" x="0.0" y="50" width="361" height="66"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="M5Z-G3-WEA" id="yTq-Af-3e4">
-                                            <rect key="frame" x="0.0" y="0.0" width="361" height="66"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                                <sections/>
-                            </tableView>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Eti-IC-JqS">
+                                <rect key="frame" x="16" y="131" width="361" height="691"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="CDO-fx-HPx">
+                                        <rect key="frame" x="8" y="8" width="345" height="691"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" systemColor="linkColor"/>
+                                    </stackView>
+                                </subviews>
+                                <viewLayoutGuide key="contentLayoutGuide" id="iTH-sx-orf"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="0Bc-id-8Jq"/>
+                            </scrollView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="crown.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="h2z-hr-86P">
-                                <rect key="frame" x="89" y="60.666666666666629" width="47" height="34.999999999999993"/>
+                                <rect key="frame" x="99" y="38.666666666666629" width="47" height="34.999999999999993"/>
                                 <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="37" id="S2h-iF-4Zg"/>
@@ -298,32 +302,27 @@
                         <color key="backgroundColor" systemColor="systemYellowColor"/>
                         <constraints>
                             <constraint firstItem="h2z-hr-86P" firstAttribute="top" secondItem="lac-nn-KEx" secondAttribute="topMargin" constant="37.999999999999964" id="BGe-jN-sBi"/>
-                            <constraint firstItem="nvP-tW-KPk" firstAttribute="top" secondItem="0rT-z0-SGj" secondAttribute="bottom" constant="74" id="G4y-Gu-8uA"/>
                             <constraint firstItem="0rT-z0-SGj" firstAttribute="top" secondItem="lac-nn-KEx" secondAttribute="topMargin" constant="37" id="IwT-Im-c05"/>
-                            <constraint firstItem="nvP-tW-KPk" firstAttribute="leading" secondItem="lac-nn-KEx" secondAttribute="leadingMargin" id="KCM-VV-hnl"/>
                             <constraint firstItem="h2z-hr-86P" firstAttribute="leading" secondItem="GCe-w0-HmW" secondAttribute="leading" constant="81" id="LcU-gb-beJ"/>
                             <constraint firstItem="GCe-w0-HmW" firstAttribute="trailing" secondItem="0rT-z0-SGj" secondAttribute="trailing" constant="103" id="Qiv-iW-tX6"/>
                             <constraint firstItem="0rT-z0-SGj" firstAttribute="leading" secondItem="h2z-hr-86P" secondAttribute="trailing" constant="8" id="d5S-vJ-C6i"/>
-                            <constraint firstItem="GCe-w0-HmW" firstAttribute="bottom" secondItem="nvP-tW-KPk" secondAttribute="bottom" constant="37" id="fKw-0a-xjH"/>
-                            <constraint firstItem="nvP-tW-KPk" firstAttribute="trailing" secondItem="lac-nn-KEx" secondAttribute="trailingMargin" id="jo3-ww-c4K"/>
-                            <constraint firstItem="nvP-tW-KPk" firstAttribute="top" secondItem="h2z-hr-86P" secondAttribute="bottom" constant="78.000000000000028" id="oHU-rY-Hmt"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="hx0-sm-lkB"/>
                     <connections>
-                        <outlet property="rankingTableView" destination="nvP-tW-KPk" id="53w-PO-kuZ"/>
+                        <outlet property="stackView" destination="CDO-fx-HPx" id="1SN-2W-wsf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mNh-fH-Edf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3091" y="830"/>
+            <point key="canvasLocation" x="3090.8396946564885" y="829.57746478873241"/>
         </scene>
         <!--SettingVC-->
         <scene sceneID="ZsB-vG-GoY">
             <objects>
                 <viewController id="BiW-N5-V2R" customClass="SettingVC" customModule="Pika_Game_Project" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="E9Z-4m-LFC">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iNU-Ih-b9G">
@@ -375,7 +374,7 @@
             <objects>
                 <viewController id="CSn-Mu-q0V" customClass="SkinsVC" customModule="Pika_Game_Project" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bqa-3F-jzc">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="pikagame_app_ıcon 64px" translatesAutoresizingMaskIntoConstraints="NO" id="JBg-uE-c4x">
@@ -654,9 +653,9 @@
                         <outlet property="playButton" destination="amq-iR-Jfe" id="WWl-aL-lMZ"/>
                         <outlet property="usernameTextField" destination="HgK-oT-f5n" id="SMT-0g-UDa"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="nextScreenVC" id="Oc8-bN-7Bw"/>
-                        <segue destination="NJC-1V-HkI" kind="presentation" identifier="rankingVC" id="nlh-Ql-ZtP"/>
-                        <segue destination="BiW-N5-V2R" kind="presentation" identifier="settingsVC" id="0fb-ZF-noP"/>
-                        <segue destination="CSn-Mu-q0V" kind="presentation" identifier="SkinsVC" id="qFA-IB-IkR"/>
+                        <segue destination="NJC-1V-HkI" kind="presentation" identifier="rankingVC" modalPresentationStyle="fullScreen" id="nlh-Ql-ZtP"/>
+                        <segue destination="BiW-N5-V2R" kind="presentation" identifier="settingsVC" modalPresentationStyle="fullScreen" id="0fb-ZF-noP"/>
+                        <segue destination="CSn-Mu-q0V" kind="presentation" identifier="SkinsVC" modalPresentationStyle="fullScreen" id="qFA-IB-IkR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6s0-QW-gg0" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -684,7 +683,8 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="lW6-rf-gjl"/>
-        <segue reference="Oc8-bN-7Bw"/>
+        <segue reference="yev-2X-89b"/>
+        <segue reference="RDC-ZX-bJF"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" name="AccentColor"/>
     <resources>
@@ -702,23 +702,26 @@
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
+        <systemColor name="linkColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemIndigoColor">
-            <color red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiaryLabelColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29803921570000003" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="viewFlipsideBackgroundColor">
             <color red="0.12156862745098039" green="0.12941176470588237" blue="0.14117647058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
