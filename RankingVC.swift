@@ -26,7 +26,7 @@ class RankingVC: UIViewController {
     
     private func setupUI() {
         // Arka plan
-        AppTheme.applyGradientBackground(to: view)
+        Theme.applyGradientBackground(to: view)
         
         // StackView ayarları
         stackView.axis = .vertical
@@ -39,7 +39,7 @@ class RankingVC: UIViewController {
         if let customFont = UIFont(name: "Electric", size: 24) {
             navigationController?.navigationBar.titleTextAttributes = [
                 .font: customFont,
-                .foregroundColor: AppTheme.textColor
+                .foregroundColor: Theme.textColor
             ]
         }
         
@@ -67,20 +67,60 @@ class RankingVC: UIViewController {
     
     private func createScoreView(rank: Int, score: HighScore) -> UIView {
         let containerView = UIView()
-        containerView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-        containerView.layer.cornerRadius = 10
+        
+        // Gradient arka plan
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width - 40, height: 80)
+        gradientLayer.colors = [Theme.electricBlue.withAlphaComponent(0.7).cgColor, Theme.pikachuYellow.withAlphaComponent(0.3).cgColor]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+        gradientLayer.cornerRadius = 15
+        containerView.layer.insertSublayer(gradientLayer, at: 0)
+        
+        // Gölge efekti
+        containerView.layer.shadowColor = UIColor.black.cgColor
+        containerView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        containerView.layer.shadowRadius = 8
+        containerView.layer.shadowOpacity = 0.3
+        containerView.layer.cornerRadius = 15
+        
+        // Madalya ikonu (ilk 3 için)
+        if rank <= 3 {
+            let medalImageView = UIImageView()
+            medalImageView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.addSubview(medalImageView)
+            
+            switch rank {
+            case 1:
+                medalImageView.image = UIImage(systemName: "medal.fill")?.withTintColor(.systemYellow, renderingMode: .alwaysOriginal)
+            case 2:
+                medalImageView.image = UIImage(systemName: "medal.fill")?.withTintColor(.systemGray, renderingMode: .alwaysOriginal)
+            case 3:
+                medalImageView.image = UIImage(systemName: "medal.fill")?.withTintColor(.systemBrown, renderingMode: .alwaysOriginal)
+            default: break
+            }
+            
+            NSLayoutConstraint.activate([
+                medalImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 15),
+                medalImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                medalImageView.widthAnchor.constraint(equalToConstant: 30),
+                medalImageView.heightAnchor.constraint(equalToConstant: 30)
+            ])
+        }
         
         let scoreStack = UIStackView()
         scoreStack.axis = .vertical
-        scoreStack.spacing = 4
+        scoreStack.spacing = 6
         scoreStack.translatesAutoresizingMaskIntoConstraints = false
         
         // Ana metin: Sıra. Oyuncu Adı - Skor
         let mainLabel = UILabel()
         mainLabel.text = "\(rank). \(score.playerName) - \(score.score) puan"
-        mainLabel.textColor = AppTheme.textColor
+        mainLabel.textColor = Theme.textColor
         if let customFont = UIFont(name: "Electric", size: 18) {
             mainLabel.font = customFont
+        } else {
+            mainLabel.font = .systemFont(ofSize: 18, weight: .bold)
         }
         
         // Alt metin: Zorluk Seviyesi ve Tarih
@@ -89,9 +129,11 @@ class RankingVC: UIViewController {
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
         subLabel.text = "\(score.difficulty) - \(dateFormatter.string(from: score.date))"
-        subLabel.textColor = AppTheme.textColor.withAlphaComponent(0.7)
+        subLabel.textColor = Theme.textColor.withAlphaComponent(0.8)
         if let customFont = UIFont(name: "Electric", size: 14) {
             subLabel.font = customFont
+        } else {
+            subLabel.font = .systemFont(ofSize: 14, weight: .medium)
         }
         
         scoreStack.addArrangedSubview(mainLabel)
@@ -101,10 +143,11 @@ class RankingVC: UIViewController {
         
         // Constraints
         NSLayoutConstraint.activate([
-            scoreStack.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8),
-            scoreStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 15),
+            scoreStack.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
+            scoreStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: rank <= 3 ? 55 : 15),
             scoreStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -15),
-            scoreStack.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8)
+            scoreStack.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -12),
+            containerView.heightAnchor.constraint(equalToConstant: 80)
         ])
         
         return containerView
@@ -122,7 +165,7 @@ class RankingVC: UIViewController {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         backButton.layer.cornerRadius = 10
-        backButton.tintColor = AppTheme.textColor
+        backButton.tintColor = Theme.textColor
         
         if let customFont = UIFont(name: "Electric", size: 18) {
             backButton.titleLabel?.font = customFont

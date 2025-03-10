@@ -29,16 +29,16 @@ class SettingVC: UIViewController {
     
     private func setupUI() {
         // Arka plan
-        AppTheme.applyGradientBackground(to: view)
+        Theme.applyGradientBackground(to: view)
         
         // Navigation bar ayarları
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigationController?.navigationBar.shadowImage = UIImage()
         navigationController?.navigationBar.isTranslucent = true
-        navigationController?.navigationBar.tintColor = AppTheme.secondaryColor
+        navigationController?.navigationBar.tintColor = Theme.secondaryColor
         
         if let titleLabel = navigationController?.navigationBar.topItem?.titleView as? UILabel {
-            titleLabel.textColor = AppTheme.textColor
+            titleLabel.textColor = Theme.textColor
             titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
         }
         
@@ -47,7 +47,7 @@ class SettingVC: UIViewController {
     }
     
     private func setupTableView() {
-        AppTheme.styleTableView(settingsTableView)
+        Theme.styleTableView(settingsTableView)
         settingsTableView.register(UITableViewCell.self, forCellReuseIdentifier: "SettingCell")
         settingsTableView.delegate = self
         settingsTableView.dataSource = self
@@ -69,7 +69,7 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SettingCell", for: indexPath)
-        AppTheme.styleTableViewCell(cell)
+        Theme.styleTableViewCell(cell)
         
         if let items = settings[indexPath.section]["items"] as? [[String: String]] {
             let item = items[indexPath.row]
@@ -80,7 +80,7 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource {
             if let key = item["key"] {
                 // Switch'li hücreler
                 let toggle = UISwitch()
-                toggle.onTintColor = AppTheme.secondaryColor
+                toggle.onTintColor = Theme.secondaryColor
                 toggle.isOn = UserDefaults.standard.bool(forKey: key)
                 toggle.tag = indexPath.row
                 toggle.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
@@ -90,7 +90,7 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource {
                 // Detay metinli hücreler
                 cell.detailTextLabel?.text = detail
                 cell.detailTextLabel?.font = .systemFont(ofSize: 15)
-                cell.detailTextLabel?.textColor = AppTheme.textColor.withAlphaComponent(0.7)
+                cell.detailTextLabel?.textColor = Theme.textColor.withAlphaComponent(0.7)
                 cell.accessoryType = .none
             }
         }
@@ -100,12 +100,12 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
-        headerView.backgroundColor = AppTheme.primaryColor.withAlphaComponent(0.3)
+        headerView.backgroundColor = Theme.primaryColor.withAlphaComponent(0.3)
         
         let label = UILabel()
         label.text = settings[section]["section"] as? String
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.textColor = AppTheme.secondaryColor
+        label.textColor = Theme.secondaryColor
         label.translatesAutoresizingMaskIntoConstraints = false
         
         headerView.addSubview(label)
@@ -135,7 +135,7 @@ extension SettingVC: UITableViewDelegate, UITableViewDataSource {
         backButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         backButton.layer.cornerRadius = 10
-        backButton.tintColor = AppTheme.textColor
+        backButton.tintColor = Theme.textColor
         
         if let customFont = UIFont(name: "Electric", size: 18) {
             backButton.titleLabel?.font = customFont

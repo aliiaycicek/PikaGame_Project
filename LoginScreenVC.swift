@@ -15,6 +15,9 @@ class LoginScreenVC: UIViewController {
     var userName = ""
     var selectedDifficulty = "Easy"
     
+    // Yıldırım efekti için timer
+    private var lightningTimer: Timer?
+    
     @IBOutlet weak var gameNameLabel: UILabel!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var playButton: UIButton! {
@@ -32,6 +35,14 @@ class LoginScreenVC: UIViewController {
         setupAudio()
         setupNotifications()
         setupUI()
+        setupLightningEffect()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Ekrandan ayrılırken timer'ı durdur
+        lightningTimer?.invalidate()
+        lightningTimer = nil
     }
     
     private func setupAudio() {
@@ -62,17 +73,116 @@ class LoginScreenVC: UIViewController {
     }
     
     private func setupUI() {
+        // Modern gradient arka plan
+        Theme.applyGradientBackground(to: view)
+        
         // Label ayarları
         if let label = gameNameLabel {
-            label.textColor = Theme.textColor
-            label.font = .systemFont(ofSize: 32, weight: .bold)
-            Theme.applyDefaultShadow(to: label)
+            label.textColor = Theme.pikachuYellow
+            
+            // Özel font (eğer varsa)
+            if let pokemonFont = UIFont(name: "Electric", size: 36) {
+                label.font = pokemonFont
+            } else {
+                label.font = .systemFont(ofSize: 36, weight: .bold)
+            }
+            
+            // Gölge efekti
+            label.layer.shadowColor = Theme.lightningOrange.cgColor
+            label.layer.shadowOffset = CGSize(width: 0, height: 3)
+            label.layer.shadowRadius = 6
+            label.layer.shadowOpacity = 0.8
         }
         
         // TextField ayarları
         if let textField = usernameTextField {
-            Theme.styleTextField(textField)
+            textField.backgroundColor = UIColor(white: 0.1, alpha: 0.6)
+            textField.textColor = Theme.pikachuYellow
+            textField.tintColor = Theme.pikachuYellow
+            textField.layer.cornerRadius = 15
+            textField.layer.borderWidth = 2
+            textField.layer.borderColor = Theme.pikachuYellow.cgColor
+            textField.attributedPlaceholder = NSAttributedString(
+                string: "Pokemon Eğiticisi Adınız",
+                attributes: [NSAttributedString.Key.foregroundColor: Theme.pikachuYellow.withAlphaComponent(0.6)]
+            )
+            
+            // Text alanı için padding ekle
+            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: textField.frame.height))
+            textField.leftView = paddingView
+            textField.leftViewMode = .always
+            
+            // Gölge efekti
+            textField.layer.shadowColor = Theme.pikachuYellow.cgColor
+            textField.layer.shadowOffset = CGSize(width: 0, height: 2)
+            textField.layer.shadowRadius = 4
+            textField.layer.shadowOpacity = 0.3
+            textField.layer.masksToBounds = false
+            
+            // Font ayarı
+            if let customFont = UIFont(name: "Electric", size: 18) {
+                textField.font = customFont
+            } else {
+                textField.font = .systemFont(ofSize: 18, weight: .medium)
+            }
         }
+        
+        // Buton ayarları
+        if let button = playButton {
+            button.backgroundColor = Theme.pikachuYellow
+            button.setTitleColor(Theme.primaryColor, for: .normal)
+            button.layer.cornerRadius = 25
+            button.clipsToBounds = true
+            Theme.applyDefaultShadow(to: button)
+            
+            // Özel font (eğer varsa)
+            if let pokemonFont = UIFont(name: "Electric", size: 20) {
+                button.titleLabel?.font = pokemonFont
+            } else {
+                button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
+            }
+        }
+        
+        // Geliştirici adı etiketi
+        let developerLabel = UILabel()
+        developerLabel.text = "Developed by Ali Ayçiçek © 2025"
+        developerLabel.textColor = UIColor.white.withAlphaComponent(0.8)
+        developerLabel.font = .systemFont(ofSize: 12, weight: .medium)
+        developerLabel.textAlignment = .center
+        developerLabel.shadowColor = UIColor.black
+        developerLabel.shadowOffset = CGSize(width: 1, height: 1)
+        
+        // Animasyon efekti ekle
+        developerLabel.alpha = 0
+        
+        view.addSubview(developerLabel)
+        developerLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            developerLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            developerLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            developerLabel.widthAnchor.constraint(equalTo: view.widthAnchor)
+        ])
+        
+        // Fade-in animasyonu
+        UIView.animate(withDuration: 1.5, delay: 0.5, options: [], animations: {
+            developerLabel.alpha = 1
+        }, completion: nil)
+        
+        // Pokemon logosu ekle
+        let logoImageView = UIImageView(image: UIImage(named: "pokemon_logo"))
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.alpha = 0.9
+        
+        view.addSubview(logoImageView)
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.6),
+            logoImageView.heightAnchor.constraint(equalToConstant: 60)
+        ])
     }
     
     @objc private func handleBackgroundMusic(_ notification: Notification) {
@@ -142,18 +252,36 @@ class LoginScreenVC: UIViewController {
     }
     
     private func showDifficultySelectionAlert() {
-        let alert = UIAlertController(title: "Select Difficulty", message: "Choose game difficulty", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Zorluk Seviyesi", message: "Oyun zorluğunu seçin", preferredStyle: .actionSheet)
         
-        let easyAction = UIAlertAction(title: "Easy", style: .default) { [weak self] _ in
+        let easyAction = UIAlertAction(title: "Kolay", style: .default) { [weak self] _ in
             self?.startGame(difficulty: "Easy")
         }
         
-        let hardAction = UIAlertAction(title: "Hard", style: .default) { [weak self] _ in
+        let mediumAction = UIAlertAction(title: "Orta", style: .default) { [weak self] _ in
+            self?.startGame(difficulty: "Medium")
+        }
+        
+        let hardAction = UIAlertAction(title: "Zor", style: .default) { [weak self] _ in
             self?.startGame(difficulty: "Hard")
         }
         
+        let cancelAction = UIAlertAction(title: "İptal", style: .cancel)
+        
+        // Alert tasarımını güncelle
+        alert.view.tintColor = Theme.primaryColor
+        if let title = alert.title {
+            let attributedString = NSAttributedString(string: title, attributes: [
+                .font: UIFont.boldSystemFont(ofSize: 18),
+                .foregroundColor: Theme.primaryColor
+            ])
+            alert.setValue(attributedString, forKey: "attributedTitle")
+        }
+        
         alert.addAction(easyAction)
+        alert.addAction(mediumAction)
         alert.addAction(hardAction)
+        alert.addAction(cancelAction)
         
         present(alert, animated: true)
     }
@@ -191,6 +319,24 @@ class LoginScreenVC: UIViewController {
                 } catch {
                     print("Error: Couldn't play sound file.")
                 }
+            }
+        }
+    }
+    
+    // MARK: - Yıldırım Efekti
+    private func setupLightningEffect() {
+        // 4-5 saniyede bir rastgele yıldırım efekti oluştur
+        lightningTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval.random(in: 4...5), repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            
+            // Yıldırım efekti ekle
+            Theme.addLightningEffect(to: self.view)
+            
+            // Timer'ı yeniden ayarla (rastgele süre)
+            self.lightningTimer?.invalidate()
+            self.lightningTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval.random(in: 4...5), repeats: true) { [weak self] _ in
+                guard let self = self else { return }
+                Theme.addLightningEffect(to: self.view)
             }
         }
     }

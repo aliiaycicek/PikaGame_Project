@@ -93,11 +93,11 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
         }
         
         // Arka plan
-        AppTheme.applyGradientBackground(to: view)
+        Theme.applyGradientBackground(to: view)
         
         // Label'ların temel özelliklerini ayarla
         [timerLable, scoreLable, highscoreLable, playerNameLable].forEach { label in
-            label.textColor = AppTheme.textColor
+            label.textColor = Theme.textColor
             if let customFont = UIFont(name: "Electric", size: 18) {
                 label.font = customFont
             }
@@ -246,6 +246,19 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
         timerLable.text = "Time: \(counter)"
         counter -= 1
         
+        if counter < 0 {
+            // Zamanlayıcıları durdur
+            timer.invalidate()
+            hideTimer.invalidate()
+            
+            // Alert göster ve RankingVC'ye geç
+            let alert = UIAlertController(title: "Oyun Bitti!", message: "Skor: \(score)", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Skorları Gör", style: .default) { [weak self] _ in
+                self?.performSegue(withIdentifier: "toRankingVC", sender: nil)
+            })
+            present(alert, animated: true)
+        }
+        
         // Score animasyonu
         if score > highScore {
             highScore = score
@@ -262,30 +275,27 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
             }
         }
         
-        // Oyun bittiğinde sadece bir kez çalışacak
-        if counter == 0 {
-            // Zamanlayıcıları durdur
+        if counter == -1 {
             timer.invalidate()
             hideTimer.invalidate()
             
-            // Skoru kaydet
+            // Oyun sonunda skoru kaydet
             if let playerName = playerNameLable?.text?.replacingOccurrences(of: "Player: ", with: "") {
-                print("Skor kaydediliyor: \(playerName), \(score), \(selectedDifficulty)")
+                print("Oyun sonu - Skor kaydediliyor: \(playerName), Skor: \(score)")
                 DatabaseManager.shared.saveHighScore(playerName: playerName, score: score, difficulty: selectedDifficulty)
             }
             
-            // Süre doldu uyarısı
-            let alert = UIAlertController(title: "Süre Doldu!", message: "Skorun: \(score). Ne yapmak istersin?", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Time's Up!", message: "Would you like to play again?", preferredStyle: .alert)
             
             // Alert tasarımı
-            alert.view.tintColor = AppTheme.primaryColor
+            alert.view.tintColor = Theme.primaryColor
             alert.view.layer.cornerRadius = 15
             
             if let title = alert.title {
                 let customFont = UIFont(name: "Electric", size: 24) ?? UIFont.systemFont(ofSize: 24)
                 let attributedString = NSAttributedString(string: title, attributes: [
                     .font: customFont,
-                    .foregroundColor: AppTheme.primaryColor
+                    .foregroundColor: Theme.primaryColor
                 ])
                 alert.setValue(attributedString, forKey: "attributedTitle")
             }
@@ -295,39 +305,33 @@ class ViewController: UIViewController, SkinsSelectionDelegate {
                 let customFont = UIFont(name: "Electric", size: 16) ?? UIFont.systemFont(ofSize: 16)
                 let attributedMessage = NSAttributedString(string: message, attributes: [
                     .font: customFont,
-                    .foregroundColor: AppTheme.textColor
+                    .foregroundColor: Theme.textColor
                 ])
                 alert.setValue(attributedMessage, forKey: "attributedMessage")
             }
             
-            let scoreButton = UIAlertAction(title: "Skorları Gör", style: .default) { _ in
-                self.performSegue(withIdentifier: "toRankingVC", sender: nil)
-            }
-            
-            let okButton = UIAlertAction(title: "Ana Menü", style: .default) { _ in
+            let okButton = UIAlertAction(title: "Back to Menu", style: .default) { _ in
                 self.performSegue(withIdentifier: "backLoginScreen", sender: nil)
             }
-            
-            let replayButton = UIAlertAction(title: "Tekrar Oyna", style: .default) { _ in
-                self.zorlukSeciminiGoster()
+            let replayButton = UIAlertAction(title: "Play Again", style: .default) { _ in
+                self.showDifficultySelectionAlert()
             }
             
-            alert.addAction(scoreButton)
             alert.addAction(okButton)
             alert.addAction(replayButton)
             self.present(alert, animated: true)
         }
     }
     
-    func zorlukSeciminiGoster() {
-        let alert = UIAlertController(title: "Zorluk Seç", message: "Oyun zorluğunu seçin", preferredStyle: .alert)
+    func showDifficultySelectionAlert() {
+        let alert = UIAlertController(title: "Select Difficulty", message: "Choose your game difficulty", preferredStyle: .alert)
         
-        let easyAction = UIAlertAction(title: "Kolay", style: .default) { _ in
+        let easyAction = UIAlertAction(title: "Easy", style: .default) { _ in
             self.selectedDifficulty = "Easy"
             self.resetGame()
         }
         
-        let hardAction = UIAlertAction(title: "Zor", style: .default) { _ in
+        let hardAction = UIAlertAction(title: "Hard", style: .default) { _ in
             self.selectedDifficulty = "Hard"
             self.resetGame()
         }
